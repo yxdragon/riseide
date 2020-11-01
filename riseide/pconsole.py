@@ -2,6 +2,8 @@ from code import InteractiveConsole
 from multiprocessing import Pipe, Process
 import threading, time
 from pdb import Pdb
+import numpy as np
+import pandas as pd
 
 def pretty_str(obj, l=10):
     if isinstance(obj, int):

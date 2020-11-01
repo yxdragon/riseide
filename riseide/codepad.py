@@ -38,6 +38,7 @@ class CodePad(stc.StyledTextCtrl):
         self.Bind(stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
         self.Bind(wx.EVT_KEY_DOWN, self.OnKeyPressed)
         self.Bind(stc.EVT_STC_MARGINCLICK, self.OnMarginClick)
+        self.Bind(wx.stc.EVT_STC_CHARADDED, self.on_text_changed)
         self.Bind(stc.EVT_STC_AUTOCOMP_COMPLETED, self.on_autocomp_finish)
         self.fixed = False
         
@@ -77,6 +78,9 @@ class CodePad(stc.StyledTextCtrl):
             pass
         self.breakpoints = []
         self.SetupMargin()
+        
+        self.SetBackSpaceUnIndents(True)
+        self.SetWrapIndentMode(stc.STC_WRAPINDENT_FIXED)
 
     def SetupMargin(self):
         self.SetMarginType(0, stc.STC_MARGIN_NUMBER)
@@ -101,6 +105,17 @@ class CodePad(stc.StyledTextCtrl):
         self.SetSelBackground(True, wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT))
         for i in cont: self.StyleSetSpec(eval('stc.STC_'+i), dump(cont[i]))
         
+    # get the selection line start, end
+    def get_sel_line(self):
+        caretPos = self.GetCurrentPos()
+
+        # selection start, end
+        sel_start_pos, sel_end_pos = self.GetSelection()
+
+        sel_start_line = self.PositionToXY(sel_start_pos)[2]
+        sel_end_line = self.PositionToXY(sel_end_pos)[2]
+
+        return sel_start_line, sel_end_line, sel_start_pos, sel_end_pos
 
     def OnUpdateUI(self, event):       
         braceAtCaret = -1
@@ -120,7 +135,9 @@ class CodePad(stc.StyledTextCtrl):
         self.word = self.GetRange(self.word_start, self.cur_pos).strip()
         self.line = line
         self.col = col
-        
+        self.cur_line_str = self.GetLineText(self.line)
+        self.cur_line_indent = self.GetLineIndentation(self.line)
+        self.cur_char = self.GetCharAt(self.cur_pos)
         
         ########
         # check bracket
@@ -190,8 +207,23 @@ class CodePad(stc.StyledTextCtrl):
                 comps = [ cm for cm in comps if len(cm) > 0 ]
                 if len(comps) > 0:
                     print('comps:', comps)
-                    self.AutoCompShow(0, " ".join(comps))  
-                    
+                    self.AutoCompShow(0, " ".join(comps))
+                      
+        # Ctrl + /, comment
+        elif self.last_key == 47 and event.ControlDown():
+            sel_start, sel_end, sel_start_pos, sel_end_pos = self.get_sel_line()
+            print('select line:', sel_start, sel_end)
+            comment = False if self.GetLine(sel_start).startswith('#') else True
+            for line in range(sel_start, sel_end+1):
+                if comment:
+                    pos = self.XYToPosition(0, line)
+                    self.InsertText(pos, "# ")
+                # if comment:
+                #     self.WriteText("# ")
+                else:
+                    self.Remove(self.XYToPosition(0, line), self.XYToPosition(0, line)+2)
+                # self.GotoLine(line)
+            self.SetSelection(sel_start_pos, sel_end_pos)
         self.autocomp_once = 0            
         event.Skip()
         
@@ -213,6 +245,20 @@ class CodePad(stc.StyledTextCtrl):
         # print("comp finished!!")
         self.Remove(self.word_start, self.cur_pos)
         self.autocomp_once = 1
+        
+    def on_text_changed(self, event):
+        key = event.GetKey()
+        if self.line>0:
+            last_line = self.cur_line_str
+            last_indent = self.cur_line_indent
+            
+            if key == 10:
+                print(last_line, last_indent)
+                if len(last_line):
+                    indent_add = 4*(last_line[-1]==':')
+                else:
+                    indent_add = 0
+                self.WriteText(' '*(last_indent+indent_add))
 
     def set_code(self, code):
         self.code = code
