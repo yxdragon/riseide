@@ -1,0 +1,21 @@
+{
+"STYLE_DEFAULT":["#000000", "#ffffff", "Courier New", 10, false, false],
+"STYLE_LINENUMBER":[null, "#C0C0C0", null, 12, null, null],
+"STYLE_CONTROLCHAR":[null, null, null, null, null, null],
+"STYLE_BRACELIGHT":["#0000FF", "#FFFF88", null, null, null, null],
+"STYLE_BRACEBAD":["#FF0000", "#FFFF88", null, null, null, null],
+"P_DEFAULT":[null, null, null, null, null, null],
+"P_COMMENTLINE":["#007F00", null, null, null, null, null],
+"P_NUMBER":[null, null, null, null, null, null],
+"P_STRING":["#7F007F", null, null, null, null, null],
+"P_CHARACTER":["#7F007F", null, null, null, null, null],
+"P_WORD":["#00007F", null, null, null, true, null],
+"P_TRIPLE":["#7F0000", null, null, null, null, null],
+"P_TRIPLEDOUBLE":["#000033", "#FFFFE8", null, null, null, null],
+"P_CLASSNAME":["#0000FF", null, null, null, true, null],
+"P_DEFNAME":["#007F7F", null, null, null, true, null],
+"P_OPERATOR":[null, null, null, null, null, null],
+"P_IDENTIFIER":[null, null, null, null, null, null],
+"P_COMMENTBLOCK":["#7F7F7F", null, null, null, null, null],
+"P_STRINGEOL":["#000000", "#E0C0E0", null, null, null, null]
+}
