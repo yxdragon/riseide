@@ -1,5 +1,5 @@
 import wx.stc as stc
-import wx
+import wx, weakref
 import keyword
 from .pconsole import ProcessConsole
 import threading, time
@@ -143,7 +143,10 @@ class WxConsole(stc.StyledTextCtrl):
 
         self.SetDropTarget(OpenDrop(self))
 
-        
+        self.workspace = lambda : None
+
+    def reference(self, workspace):
+        self.workspace = weakref.ref(workspace)
 
     def restart(self):
         self.history = []
@@ -231,14 +234,16 @@ class WxConsole(stc.StyledTextCtrl):
         return event.Skip()
     
     def write(self, cont):
-        print('write:', cont)
         # self.SetEditable(True)
         wx.CallAfter(self.WriteText, cont)
         # self.SetEditable(False) 
         
     def ready(self):
         # self.SetEditable(True)
-        print('ok')
+        print('ready>>>>>>')
+
+        if self.workspace() != None:
+            wx.CallAfter(self.workspace().on_fresh, None)
         self.last = self.GetInsertionPoint()
 
     def goon(self):

@@ -1,4 +1,4 @@
-import wx
+import wx, weakref
 import wx.lib.agw.flatnotebook as FNB
 from .wxconsole import WxConsole
 
@@ -30,11 +30,18 @@ class ConsoleBook(FNB.FlatNotebook):
 		self._pages.SetSizer(sizer)
 		
 		self.Bind(FNB.EVT_FLATNOTEBOOK_PAGE_CLOSING, self.on_closing)
+		self.Bind(FNB.EVT_FLATNOTEBOOK_PAGE_CHANGED, self.on_active)
 		self.btn_new.Bind(wx.EVT_BUTTON, self.new_console)
 		self.btn_clear.Bind(wx.EVT_BUTTON, self.on_clear)
 		self.btn_restart.Bind(wx.EVT_BUTTON, self.on_restart)
 		self.btn_close.Bind(wx.EVT_BUTTON, self.on_close)
+		self.workspace = lambda : None
 		self.new_console(None)
+
+	def reference(self, workspace):
+		self.workspace = weakref.ref(workspace)
+		self.get_console().reference(workspace)
+		workspace.reference(self.get_console())
 
 	def get_console(self): return self.GetCurrentPage()
 
@@ -44,6 +51,11 @@ class ConsoleBook(FNB.FlatNotebook):
 
 	def on_clear(self, event):
 		self.get_console().SetValue('>>> ')
+
+	def on_active(self, event):
+		if self.workspace() is None: return
+		self.workspace().reference(self.GetPage(event.GetSelection()))
+		self.GetPage(event.GetSelection()).reference(self.workspace())
 
 	def on_closing(self, event):
 		self.GetPage(event.GetSelection()).terminate()

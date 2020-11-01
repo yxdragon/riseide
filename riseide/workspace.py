@@ -7,8 +7,7 @@ class WorkSpace ( wx.Panel ):
     def __init__( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( 300, 500), style = wx.TAB_TRAVERSAL, name = wx.EmptyString ):
         wx.Panel.__init__ ( self, parent, id = id, pos = pos, size = size, style = style, name = name )
         sizer = wx.BoxSizer( wx.VERTICAL )
-        self.riseup = weakref.ref(parent)
-        self.consoles = parent.console
+        self.console = lambda : None
         #sizer.Add( self.consoles, 0, wx.EXPAND, 5 )
 
         filter = wx.BoxSizer( wx.HORIZONTAL )
@@ -67,6 +66,10 @@ class WorkSpace ( wx.Panel ):
         self.chk_table.Bind(wx.EVT_CHECKBOX, self.on_fresh)
         self.chk_all.Bind(wx.EVT_CHECKBOX, self.on_fresh)
 
+    def reference(self, console):
+        self.console = weakref.ref(console)
+        self.on_fresh(None)
+
     def get_filter(self):
         filt = []
         if self.chk_base.GetValue(): filt.extend([int, float, str])
@@ -77,29 +80,29 @@ class WorkSpace ( wx.Panel ):
 
     def on_fresh(self, event):
         self.lst_table.DeleteAllItems()
-        items, sta = self.consoles.get_console().getobj('locals', self.get_filter())
+        items, sta = self.console().getobj('locals', self.get_filter())
         for item in items:
             self.lst_table.Append(item)
 
     def on_select(self, event):
         name = event.GetText()
-        obj, status = self.consoles.get_console().getobj('get', name)
+        obj, status = self.console().getobj('get', name)
         self.txt_name.SetValue(name)
         self.txt_detail.SetValue(repr(obj))
 
     def on_export(self, event):
         name = self.txt_name.GetValue()
-        obj, status = self.consoles.get_console().getobj('get', name)
+        obj, status = self.console().getobj('get', name)
         self.txt_detail.SetValue(repr(obj))
 
     def on_import(self, event):
         name = self.txt_name.GetValue()
-        obj, status = self.consoles.get_console().getobj('set', (name, self.txt_detail.GetValue()))
+        obj, status = self.console().getobj('set', (name, self.txt_detail.GetValue()))
         self.txt_detail.SetValue(str(obj))
 
     def on_view(self, event):
         name = self.txt_name.GetValue()
-        obj, status = self.consoles.get_console().getobj('get', name)
+        obj, status = self.console().getobj('get', name)
         self.txt_detail.SetValue(repr(obj))
         if isinstance(obj, np.ndarray) and obj.ndim in (2,3):
             self.riseup().show_img(obj, path=None, name=name, fixed=True)

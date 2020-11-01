@@ -46,11 +46,12 @@ class MiniFrame ( wx.Frame ):
         sizer.Add( self.page, 1, wx.EXPAND |wx.ALL, 0 ); panel.SetSizer( sizer )
         self.m_mgr.AddPane( panel, wx.aui.AuiPaneInfo() .Center() .PinButton( True ).Dock().Resizable().CaptionVisible( False ).FloatingSize( wx.DefaultSize ) )
 
-        self.console = ConsoleBook(self)
-        self.m_mgr.AddPane( self.console, wx.aui.AuiPaneInfo() .Bottom() .PinButton( True ).Dock().Resizable().FloatingSize( wx.Size( -1,-1 ) ).BestSize( wx.Size( -1,200 ) ) )
-
         self.workspace = WorkSpace(self)
         self.m_mgr.AddPane( self.workspace, wx.aui.AuiPaneInfo() .Right() .PinButton( True ).Dock().Resizable().FloatingSize( wx.DefaultSize ).BestSize( wx.Size( 300,-1 ) ).Layer( 1 ) )
+
+        self.console = ConsoleBook(self)
+        self.console.reference(self.workspace)
+        self.m_mgr.AddPane( self.console, wx.aui.AuiPaneInfo() .Bottom() .PinButton( True ).Dock().Resizable().FloatingSize( wx.Size( -1,-1 ) ).BestSize( wx.Size( -1,200 ) ) )
 
         self.m_mgr.Update()
         self.Centre( wx.BOTH )
@@ -77,7 +78,12 @@ class MiniFrame ( wx.Frame ):
         from riseide.plugins import code_plugin as plg
         tools = [('./icons/全选@1x.png', plg.SelectAll), 
                  ('./icons/运行@1x.png', plg.ExecFile),
-                 ('./icons/调试@1x.png', plg.Debug)]
+                 ('./icons/调试@1x.png', plg.Debug),
+                 ('./icons/调试@1x.png', plg.DebugContinue),
+                 ('./icons/调试@1x.png', plg.DebugNext),
+                 ('./icons/调试@1x.png', plg.DebugInto),
+                 ('./icons/调试@1x.png', plg.DebugOut),
+                 ('./icons/调试@1x.png', plg.DebugStop)]
         self.toolbar.add_tools(None, tools)
 
     def on_open(self, path, fixed):
