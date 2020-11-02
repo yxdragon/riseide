@@ -65,15 +65,15 @@ class ToolBar(wx.aui.AuiToolBar):
         self.GetSizer().Clear()
         self.DestroyChildren()
 
-    def add_tool(self, logo, tool):
+    def add_tool(self, logo, tool, tip):
         btn = self.AddTool( wx.ID_ANY, u"tool", wx.Bitmap(logo), #make_logo(logo), 
-            wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None )
+            wx.NullBitmap, wx.ITEM_NORMAL, tip, wx.EmptyString, None )
         self.bind(btn, tool)
         self.Realize()
         
 
     def add_tools(self, name, tools):
-        for logo, tool in tools: self.add_tool(logo, tool)     
+        for logo, tool, tip in tools: self.add_tool(logo, tool, tip)     
         
 if __name__ == '__main__':
     path = 'C:/Users/54631/Documents/projects/imagepy/imagepy/tools/drop.gif'

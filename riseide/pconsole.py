@@ -4,6 +4,7 @@ import threading, time
 from pdb import Pdb
 import numpy as np
 import pandas as pd
+import sys
 
 def pretty_str(obj, l=10):
     if isinstance(obj, int):
@@ -151,7 +152,7 @@ class Console(InteractiveConsole):
         else: time.sleep(interval)
 
     def execfile(self, path):
-        with open(path) as f: exec(f.read(), self.locals)
+        with open(path, encoding='utf-8') as f: exec(f.read(), self.locals)
 
     def debug(self, path):
         db = Powerdb()

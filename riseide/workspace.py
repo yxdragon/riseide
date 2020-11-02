@@ -72,7 +72,7 @@ class WorkSpace ( wx.Panel ):
 
     def get_filter(self):
         filt = []
-        if self.chk_base.GetValue(): filt.extend([int, float, str])
+        if self.chk_base.GetValue(): filt.extend([int, float, str, list])
         if self.chk_array.GetValue(): filt.append(np.ndarray)
         if self.chk_table.GetValue(): filt.append(pd.DataFrame)
         if self.chk_all.GetValue(): filt.append('all')

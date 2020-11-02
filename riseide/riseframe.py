@@ -76,14 +76,14 @@ class MiniFrame ( wx.Frame ):
 
     def init_toolbar(self): 
         from riseide.plugins import code_plugin as plg
-        tools = [('./icons/全选@1x.png', plg.SelectAll), 
-                 ('./icons/运行@1x.png', plg.ExecFile),
-                 ('./icons/调试@1x.png', plg.Debug),
-                 ('./icons/调试@1x.png', plg.DebugContinue),
-                 ('./icons/调试@1x.png', plg.DebugNext),
-                 ('./icons/调试@1x.png', plg.DebugInto),
-                 ('./icons/调试@1x.png', plg.DebugOut),
-                 ('./icons/调试@1x.png', plg.DebugStop)]
+        tools = [('./icons/全选@1x.png', plg.SelectAll, "全选"), 
+                 ('./icons/运行@1x.png', plg.ExecFile, "运行"),
+                 ('./icons/调试@1x.png', plg.Debug, "调试"),
+                 ('./icons/调试@1x.png', plg.DebugContinue, "继续"),
+                 ('./icons/调试@1x.png', plg.DebugNext, "下一行"),
+                 ('./icons/调试@1x.png', plg.DebugInto, "跳入"),
+                 ('./icons/调试@1x.png', plg.DebugOut, "跳出"),
+                 ('./icons/调试@1x.png', plg.DebugStop, "停止")]
         self.toolbar.add_tools(None, tools)
 
     def on_open(self, path, fixed):

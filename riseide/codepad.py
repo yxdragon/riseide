@@ -6,7 +6,7 @@ import jedi
 
 class IDEObject:
 	def __init__(self, name='noname', path=None):
-		self.saved = True
+		self.saved = False
 		self.path = path
 		self.name = name
 
@@ -113,7 +113,12 @@ class CodePad(stc.StyledTextCtrl):
         sel_start_pos, sel_end_pos = self.GetSelection()
 
         sel_start_line = self.PositionToXY(sel_start_pos)[2]
-        sel_end_line = self.PositionToXY(sel_end_pos)[2]
+        sel_end_line = self.PositionToXY(sel_end_pos-1)[2]
+        
+        if sel_start_pos == sel_end_pos:
+            sel_end_line = sel_start_line
+        
+        # print('pos2xy', self.PositionToXY(sel_start_pos), self.PositionToXY(sel_end_pos-1))
 
         return sel_start_line, sel_end_line, sel_start_pos, sel_end_pos
 
@@ -165,8 +170,11 @@ class CodePad(stc.StyledTextCtrl):
         if braceAtCaret != -1  and braceOpposite == -1:
             self.BraceBadLight(braceAtCaret)
         else:
-            self.BraceHighlight(braceAtCaret, braceOpposite)     
-    
+            self.BraceHighlight(braceAtCaret, braceOpposite)  
+            
+        sel_start, sel_end, sel_start_pos, sel_end_pos = self.get_sel_line()   
+        print('select:', self.get_sel_line() )
+
     
     # highlight_Line, one-based index
     def highlight_line(self, line):
@@ -216,14 +224,14 @@ class CodePad(stc.StyledTextCtrl):
             comment = False if self.GetLine(sel_start).startswith('#') else True
             for line in range(sel_start, sel_end+1):
                 if comment:
-                    pos = self.XYToPosition(0, line)
+                    pos = self.PositionFromLine(line)
                     self.InsertText(pos, "# ")
-                # if comment:
-                #     self.WriteText("# ")
+                    self.CharRight()
+                   
                 else:
                     self.Remove(self.XYToPosition(0, line), self.XYToPosition(0, line)+2)
-                # self.GotoLine(line)
-            self.SetSelection(sel_start_pos, sel_end_pos)
+                    self.CharRight()
+                    
         self.autocomp_once = 0            
         event.Skip()
         

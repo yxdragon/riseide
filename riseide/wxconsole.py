@@ -124,6 +124,9 @@ class WxConsole(stc.StyledTextCtrl):
         # caret
         self.SetCaretForeground("RED")
         self.SetCaretWidth(2)
+        
+        # ; for separator
+        self.AutoCompSetSeparator(59)
 
         self.Bind(wx.EVT_KEY_DOWN, self.on_key)
         self.Bind(stc.EVT_STC_CHARADDED, self.on_text_changed)
@@ -220,18 +223,23 @@ class WxConsole(stc.StyledTextCtrl):
             if status and len(cont)>0:
                 self.AutoCompShow(0, ' '.join(cont))
          
-        # press (       
-        if key == 40:
-            self.LineEnd()
-            newline = self.GetLineText(self.GetCurrentLine())
-            newline = newline[4:-1].split(' ')[-1]
-            cont, status = self.pc.getobj('doc', newline)
-            if status and len(cont)>0:
-                self.CallTipSetBackground("yellow")
-                self.CallTipShow(self.GetCurrentPos(), cont)
+        # # press (       
+        # if key == 40:
+        #     self.LineEnd()
+        #     newline = self.GetLineText(self.GetCurrentLine())
+        #     newline = newline[4:-1].split(' ')[-1]
+        #     cont, status = self.pc.getobj('doc', newline)
+        #     if status and len(cont)>0:
+        #         self.CallTipSetBackground("yellow")
+        #         self.CallTipShow(self.GetCurrentPos(), cont)
         
     def on_mouse(self, event):
-        return event.Skip()
+        if event.LeftDown() or event.RightDown() or event.LeftDClick():
+            print("mouse left down!")
+            self.SetFocus()
+            return 
+        else:
+            event.Skip()
     
     def write(self, cont):
         # self.SetEditable(True)
